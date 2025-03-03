@@ -1,0 +1,32 @@
+{
+  "order_info": {
+    "orders": [
+      {
+        "orderId": 1,
+        "custId": 1,
+        "productId": 1,
+        "quantity": 100,
+        "description": "sample order 1"
+      },
+      {
+        "orderId": 2,
+        "custId": 1,
+        "productId": 2,
+        "quantity": 10,
+        "description": "sample order 2"
+      }
+    ],
+    "delivery": {
+      "nodeId": 1,
+      "note": "sample note 1",
+      "deliveryAdd": "12 NVB F4 GV, Ho Chi Minh, 76001, Viet Nam",
+      "isDelivery": false
+    },
+    "payments": {
+      "paymentId": 1,
+      "custId": 1,
+      "cardNumber": "7485-2222-3456-2435",
+      "cvv": "111"
+    }
+  }
+}
