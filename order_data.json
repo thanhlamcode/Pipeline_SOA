@@ -1,0 +1,27 @@
+{
+  "order_info": {
+    "orders": [
+      {
+        "orderId": 307,
+        "custId": 158,
+        "productId": 39,
+        "quantity": 9,
+        "description": "Random order 0 for customer 158"
+      }
+    ],
+    "delivery": {
+      "nodeId": 45,
+      "note": "Delivery note for customer 158",
+      "deliveryAdd": "1 Nguyen Hue, Binh Thanh, Can Tho, Viet Nam",
+      "isDelivery": true,
+      "estimatedDeliveryDays": 0,
+      "deliveryFee": 0.0
+    },
+    "payments": {
+      "paymentId": 158,
+      "custId": 158,
+      "cardNumber": "0433-5593-7397-6194",
+      "cvv": "309"
+    }
+  }
+}
