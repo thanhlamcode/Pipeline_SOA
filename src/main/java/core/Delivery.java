@@ -1,7 +1,5 @@
 package core;
 
-import java.util.List;
-
 public class Delivery {
     private int nodeId;
     private String note;

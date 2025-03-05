@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+    id 'application' // ✅ Thêm plugin application
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+application {
+    mainClass = 'clients.Main' // Thay bằng class chứa hàm main()
+}
