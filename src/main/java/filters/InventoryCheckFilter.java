@@ -7,15 +7,15 @@ import core.entities.IMessage;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class InventoryCheckFilter implements IFilter {
-    // Simulated inventory database with thread-safe map
+    private static final Logger logger = Logger.getLogger(InventoryCheckFilter.class.getName());
     private static final Map<Integer, Integer> inventory = new ConcurrentHashMap<>();
 
     static {
-        // Initialize with product data (product ID -> quantity in stock)
+        // Khởi tạo kho hàng (ID sản phẩm -> Số lượng tồn kho)
         for (int i = 1; i <= 50; i++) {
-            // Products with odd IDs have 1000 units, even IDs have 500 units
             inventory.put(i, i % 2 == 0 ? 500 : 1000);
         }
     }
@@ -27,30 +27,44 @@ public class InventoryCheckFilter implements IFilter {
 
     @Override
     public IMessage execute(IMessage message) {
+        if (message == null || message.getPayload() == null) {
+            throw new IllegalArgumentException("IMessage hoặc payload bị null");
+        }
+
         OrderRequest orderRequest = (OrderRequest) message.getPayload();
 
-        // Check if all products are available in the requested quantities
-        for (Order order : orderRequest.getOrder_info().getOrders()) {
-            Integer stock = inventory.get(order.getProductId());
+        if (orderRequest.getOrder_info() == null) {
+            throw new IllegalArgumentException("OrderRequest hoặc OrderInfo bị null");
+        }
 
-            if (stock == null || stock < order.getQuantity()) {
+        // Dùng bản sao để rollback nếu đơn hàng không hợp lệ
+        Map<Integer, Integer> tempInventory = new ConcurrentHashMap<>(inventory);
+
+        for (Order order : orderRequest.getOrder_info().getOrders()) {
+            int productId = order.getProductId();
+            int requested = order.getQuantity();
+            int available = inventory.getOrDefault(productId, 0);
+
+            if (available < requested) {
                 message.setSuccess(false);
-                message.setMessage("Product ID " + order.getProductId() +
-                        " is out of stock or insufficient quantity. Available: " +
-                        (stock == null ? 0 : stock) + ", Requested: " + order.getQuantity());
+                message.setMessage("Sản phẩm " + productId + " không đủ số lượng. Còn lại: " + available + ", Yêu cầu: " + requested);
+
+                // Khôi phục lại kho hàng trước đó (rollback)
+                inventory.putAll(tempInventory);
                 return message;
             }
 
-            // Update inventory (simulating a transactional update)
-            inventory.put(order.getProductId(), stock - order.getQuantity());
-            System.out.println("Reserved " + order.getQuantity() + " units of product " +
-                    order.getProductId() + ". Remaining: " + (stock - order.getQuantity()));
+            // Cập nhật tồn kho an toàn
+            inventory.compute(productId, (key, currentStock) -> currentStock - requested);
+            logger.info("Đã đặt trước " + requested + " sản phẩm " + productId + ". Còn lại: " + (available - requested));
         }
 
+        message.setSuccess(true);
+        message.setMessage("Tất cả sản phẩm đều đủ số lượng, đơn hàng hợp lệ.");
         return message;
     }
 
-    // Method to get current inventory level (for reporting)
+    // Lấy số lượng hàng tồn kho
     public static int getInventoryLevel(int productId) {
         return inventory.getOrDefault(productId, 0);
     }

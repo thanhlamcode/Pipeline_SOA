@@ -6,6 +6,7 @@ import core.Message;
 import filters.InventoryCheckFilter;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*") // Chấp nhận request từ tất cả các nguồn
 @RestController
 @RequestMapping("/inventory")
 public class InventoryController {

@@ -6,6 +6,7 @@ import core.Message;
 import filters.DeliveryServiceFilter;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*") // Chấp nhận request từ tất cả các nguồn
 @RestController
 @RequestMapping("/delivery")
 public class DeliveryController {
